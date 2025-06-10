@@ -22,14 +22,9 @@ jobs:
       - name: Generate tag dynamically
         id: generate
         run: |
-          # Ensure that tags are up-to-date
           git fetch --tags
-          echo "Fetched tags."
-          
-          # Get the latest tag matching the 0.0.* pattern
           latest_tag=$(git tag -l "0.0.*" --sort=-v:refname | head -n 1)
-          echo "Latest tag: $latest_tag"
-          
+
           if [ -z "$latest_tag" ]; then
             new_tag="0.0.1"
           else
@@ -37,9 +32,9 @@ jobs:
             new_patch=$((patch + 1))
             new_tag="0.0.$new_patch"
           fi
-          
-          echo "New tag: $new_tag"
-          echo "TAG=$new_tag" >> $GITHUB_OUTPUT
+
+          echo "Generated tag: $new_tag"
+          echo "TAG=$new_tag" >> $GITHUB_ENV  # Use GITHUB_ENV instead of GITHUB_OUTPUT
 
       - name: Configure git
         run: |
@@ -48,8 +43,9 @@ jobs:
 
       - name: Create and push tag
         run: |
-          git tag ${{ steps.generate.outputs.TAG }}
-          git push origin ${{ steps.generate.outputs.TAG }}
+          git tag ${{ env.TAG }}  # Using GITHUB_ENV variable instead
+          git push origin ${{ env.TAG }}
+
 
   build:
     needs: tag
