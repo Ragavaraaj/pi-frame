@@ -19,7 +19,7 @@ build:
 		@echo "Creating build directory..."
 		mkdir -p $(OUTPUT_DIR)
 	    @echo "Building the application..."
-	    env GOOS=linux GOARCH=arm64 go build -tags nogpu -o $(OUTPUT_FILE)
+	    CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -tags nogpu -o $(OUTPUT_FILE)
 
 brun: build
 	    @echo "Running the application in background..."

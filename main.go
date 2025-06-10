@@ -18,6 +18,10 @@ import (
 )
 
 func main() {
+
+	// initialize environment variables and defaults
+	initEnv()
+
 	// Open the framebuffer device.
 	fb, err := os.OpenFile("/dev/fb0", os.O_RDWR, 0)
 	if err != nil {
@@ -73,7 +77,7 @@ func main() {
 			log.Printf("failed to draw image to framebuffer: %v", err)
 		}
 
-		time.Sleep(intervalSeconds * time.Second)
+		time.Sleep(time.Duration(intervalSeconds) * time.Second)
 		index = (index + 1) % len(images)
 	}
 }
