@@ -12,18 +12,24 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code with full history to fetch tags
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Generate tag dynamically
         run: |
           TAG="v$(date +%Y.%m.%d-%H%M)"
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "Generated tag: ${TAG}"
 
-      - name: Create and push tag
+      - name: Configure git
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
+
+      - name: Create and push tag
+        run: |
           git tag $TAG
           git push origin $TAG
 
@@ -31,8 +37,10 @@ jobs:
     needs: tag
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code with full history
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -58,8 +66,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code with full history and tags
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
