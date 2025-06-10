@@ -3,19 +3,28 @@ GO_FILES=$(wildcard *.go)
 OUTPUT_DIR=build
 OUTPUT_FILE=$(OUTPUT_DIR)/$(APP_NAME)
 
-.PHONY: all build clean test 
+.DEFAULT_GOAL := run
 
-all: build
+.PHONY: fmt vet build brun
 
-build: $(GO_FILES)
-	@mkdir -p $(OUTPUT_DIR)
-	@echo "Building executable..."
-	@GOOS=linux GOARCH=arm GOARM=6 go build -o $(OUTPUT_FILE)
+fmt:
+		@echo "Formatting code..."
+		go fmt ./...
 
-clean:
-	@echo "Cleaning build artifacts..."
-	@rm -rf $(OUTPUT_DIR)
+vet:
+	    @echo "Running go vet..."
+	    go vet ./...
 
+build:
+		@echo "Creating build directory..."
+		mkdir -p $(OUTPUT_DIR)
+	    @echo "Building the application..."
+	    env GOOS=linux GOARCH=arm64 go build -tags nogpu -o $(OUTPUT_FILE)
 
-ci: test build
-	@echo "CI pipeline completed successfully."
+brun: build
+	    @echo "Running the application in background..."
+	    $(OUTPUT_FILE)
+
+run:
+	    @echo "Running the application..."
+	    go run main.go
