@@ -48,8 +48,8 @@ jobs:
 
       - name: Create and push tag
         run: |
-          git tag $TAG
-          git push origin $TAG
+          git tag ${{ steps.generate.outputs.TAG }}
+          git push origin ${{ steps.generate.outputs.TAG }}
 
   build:
     needs: tag
@@ -98,7 +98,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.tag.outputs.TAG }}
+          tag_name: ${{ needs.tag.outputs.TAG }}  # Ensure it uses the dynamically generated tag
           release_name: Release ${{ needs.tag.outputs.TAG }}
           draft: false
           prerelease: false
