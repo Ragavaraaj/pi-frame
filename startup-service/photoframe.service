@@ -1,0 +1,14 @@
+[Unit]
+Description=Photo Frame Service
+After=network.target
+
+[Service]
+Type=simple
+Environment="SLIDESHOW_INTERVAL=60"
+Environment="SLIDESHOW_DIR=/home/display/images"
+ExecStart=/home/display/photo-frame
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

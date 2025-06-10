@@ -1,4 +1,4 @@
-APP_NAME=fbimage_display
+APP_NAME=photo-frame
 GO_FILES=$(wildcard *.go)
 OUTPUT_DIR=build
 OUTPUT_FILE=$(OUTPUT_DIR)/$(APP_NAME)
@@ -27,4 +27,4 @@ brun: build
 
 run:
 	    @echo "Running the application..."
-	    go run main.go
+	    SLIDESHOW_INTERVAL=60 SLIDESHOW_DIR=/home/display/images go run main.go
