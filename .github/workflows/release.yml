@@ -93,7 +93,7 @@ jobs:
           path: build/
 
       - name: Debug generated tag
-        run: echo "Generated tag ${{ steps.generate.outputs.TAG }}"
+        run: echo "Generated tag ${{ needs.tag.outputs.TAG }}"
 
       - name: Create Release
         id: create_release
