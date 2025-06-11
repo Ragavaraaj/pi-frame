@@ -34,7 +34,7 @@ jobs:
           fi
 
           echo "Generated tag: $new_tag"
-          echo "TAG=$new_tag" >> $GITHUB_ENV  # Use GITHUB_ENV instead of GITHUB_OUTPUT
+          echo "TAG=$new_tag" >> "$GITHUB_OUTPUT" # Use GITHUB_OUTPUT instead of GITHUB_ENV
 
       - name: Configure git
         run: |
@@ -43,8 +43,8 @@ jobs:
 
       - name: Create and push tag
         run: |
-          git tag ${{ env.TAG }}  # Using GITHUB_ENV variable instead
-          git push origin ${{ env.TAG }}
+          git tag ${{ steps.generate.outputs.TAG }}  # Using GITHUB_OUTPUT variable instead
+          git push origin ${{ steps.generate.outputs.TAG }}
 
 
   build:
