@@ -96,9 +96,10 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.tag.outputs.TAG }}  # Ensure it uses the dynamically generated tag
         with:
-          tag_name: ${{ needs.tag.outputs.TAG }}  # Ensure it pulls the dynamically generated tag
-          release_name: Release ${{ needs.tag.outputs.TAG }}
+          tag_name: $TAG
+          release_name: Release $TAG
           draft: false
           prerelease: false
 
