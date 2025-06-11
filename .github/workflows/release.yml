@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   build:
-    needs: tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code with full history
