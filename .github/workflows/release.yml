@@ -9,44 +9,6 @@ permissions:
   contents: write
 
 jobs:
-  tag:
-    runs-on: ubuntu-latest
-    outputs:
-      TAG: ${{ steps.generate.outputs.TAG }}
-    steps:
-      - name: Checkout code with full history to fetch tags
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Generate tag dynamically
-        id: generate
-        run: |
-          git fetch --tags
-          latest_tag=$(git tag -l "0.0.*" --sort=-v:refname | head -n 1)
-
-          if [ -z "$latest_tag" ]; then
-            new_tag="0.0.1"
-          else
-            patch=$(echo "$latest_tag" | cut -d '.' -f3)
-            new_patch=$((patch + 1))
-            new_tag="0.0.$new_patch"
-          fi
-
-          echo "Generated tag: $new_tag"
-          echo "TAG=$new_tag" >> "$GITHUB_OUTPUT" # Use GITHUB_OUTPUT instead of GITHUB_ENV
-
-      - name: Configure git
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-      - name: Create and push tag
-        run: |
-          git tag ${{ steps.generate.outputs.TAG }}  # Using GITHUB_OUTPUT variable instead
-          git push origin ${{ steps.generate.outputs.TAG }}
-
-
   build:
     needs: tag
     runs-on: ubuntu-latest
@@ -88,18 +50,31 @@ jobs:
           name: photo-frame
           path: build/
 
-      - name: Debug generated tag
-        run: echo "Generated tag ${{ needs.tag.outputs.TAG }}"
+      - name: Generate tag dynamically
+        id: generate
+        run: |
+          git fetch --tags
+          latest_tag=$(git tag -l "0.0.*" --sort=-v:refname | head -n 1)
+
+          if [ -z "$latest_tag" ]; then
+            new_tag="0.0.1"
+          else
+            patch=$(echo "$latest_tag" | cut -d '.' -f3)
+            new_patch=$((patch + 1))
+            new_tag="0.0.$new_patch"
+          fi
+
+          echo "Generated tag: $new_tag"
+          echo "TAG=$new_tag" >> "$GITHUB_ENV" # Use GITHUB_ENV instead of GITHUB_ENV
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ needs.tag.outputs.TAG }}  # Ensure it uses the dynamically generated tag
         with:
-          tag_name: $TAG
-          release_name: Release $TAG
+          tag_name: ${{ env.TAG }}
+          release_name: Release ${{ env.TAG }}
           draft: false
           prerelease: false
 
